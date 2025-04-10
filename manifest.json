@@ -1,10 +1,10 @@
 {
-	"id": "backlink-settings",
-	"name": "Backlink Settings",
-	"version": "1.0.0",
-	"minAppVersion": "0.15.0",
-	"description": "Save default settings for the 'Linked mentions' view at the bottom of a document.",
-	"author": "Calvin",
-	"authorUrl": "https://github.com/calvinwyoung/",
-	"isDesktopOnly": false
+  "id": "backlink-settings",
+  "name": "Backlink Settings",
+  "version": "1.0.0",
+  "minAppVersion": "0.15.0",
+  "description": "Save default settings for the 'Linked mentions' view at the bottom of a document.",
+  "author": "Calvin",
+  "authorUrl": "https://github.com/calvinwyoung/",
+  "isDesktopOnly": false
 }
