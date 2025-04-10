@@ -23,15 +23,11 @@ export default class BacklinkSettingsPlugin extends Plugin {
     // This adds a settings tab so the user can configure various aspects of the plugin
     this.addSettingTab(new BacklinkSettingsTab(this.app, this));
 
-    // Register event to apply settings when a file is opened
+    // Register event to apply settings when layout changes
     this.registerEvent(
-      this.app.workspace.on('file-open', (file: TFile) => {
-        if (file && document.querySelector('div.embedded-backlinks')) {
-          console.log('File opened:', file.name);
-          setTimeout(() => {
-            this.applyBacklinkSettings();
-          }, 1000);
-        }
+      this.app.workspace.on('layout-change', () => {
+        console.log('-- layout-change');
+        this.applyBacklinkSettings();
       })
     );
   }
@@ -47,8 +43,17 @@ export default class BacklinkSettingsPlugin extends Plugin {
   }
 
   private applyBacklinkSettings() {
-    const embeddedBacklinks = document.querySelector('div.embedded-backlinks');
+    const embeddedBacklinks = document.querySelector(
+      'div.embedded-backlinks'
+    ) as HTMLElement;
+
+    // If the embedded backlinks element is not found, return.
     if (!embeddedBacklinks) {
+      return;
+    }
+
+    // If the embedded backlinks element is not visible, return.
+    if (!embeddedBacklinks.offsetWidth || !embeddedBacklinks.offsetHeight) {
       return;
     }
 
