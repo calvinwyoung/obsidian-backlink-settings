@@ -59,13 +59,9 @@ export default class BacklinkSettingsPlugin extends Plugin {
 
     // Collapse results if the setting is enabled.
     if (this.settings.collapseResults) {
-      console.log('Collapsing results');
-
       const collapseButton = embeddedBacklinks.querySelector(
         "[aria-label='Collapse results']:not(.is-active)"
-      );
-
-      console.log('collapseButton', collapseButton);
+      ) as HTMLElement;
 
       if (collapseButton) {
         (collapseButton as HTMLElement).click();
@@ -74,34 +70,32 @@ export default class BacklinkSettingsPlugin extends Plugin {
 
     // Show more context if the setting is enabled.
     if (this.settings.showMoreContext) {
-      console.log('Showing more context');
-
       const showContextButton = embeddedBacklinks.querySelector(
         "[aria-label='Show more context']:not(.is-active)"
-      );
-
-      console.log('showContextButton', showContextButton);
+      ) as HTMLElement;
 
       if (showContextButton) {
-        (showContextButton as HTMLElement).click();
+        showContextButton.click();
       }
     }
-    /*
-    // Apply sort order setting
-    const sortButton = embeddedBacklinks.querySelector(".sort-button");
-    if (sortButton) {
-      // Click the sort button to open the dropdown
-      (sortButton as HTMLElement).click();
 
-      // Find and click the desired sort option
-      const sortOptions = document.querySelectorAll(".sort-option");
+    // Apply sort order setting
+    const sortButton = embeddedBacklinks.querySelector(
+      "[aria-label='Change sort order']"
+    ) as HTMLElement;
+    if (sortButton) {
+      // Click the sort button to open the dropdown.
+      sortButton.click();
+
+      // TODO: This doesn't work.
+      // Find and click the desired sort option.
+      const sortOptions = document.querySelectorAll('.sort-option');
       sortOptions.forEach((option) => {
         if (option.textContent?.toLowerCase() === this.settings.sortOrder) {
           (option as HTMLElement).click();
         }
       });
     }
-    */
   }
 }
 
@@ -119,8 +113,8 @@ class BacklinkSettingsTab extends PluginSettingTab {
     containerEl.empty();
 
     new Setting(containerEl)
-      .setName('Collapse Results')
-      .setDesc('Automatically collapse backlink results when opening a file')
+      .setName('Collapse results')
+      .setDesc('Automatically collapse backlink results.')
       .addToggle((toggle) =>
         toggle.setValue(this.plugin.settings.collapseResults).onChange(async (value) => {
           this.plugin.settings.collapseResults = value;
@@ -129,8 +123,8 @@ class BacklinkSettingsTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName('Show More Context')
-      .setDesc('Automatically show more context for backlinks when opening a file')
+      .setName('Show more context')
+      .setDesc('Automatically show more context for backlink results.')
       .addToggle((toggle) =>
         toggle.setValue(this.plugin.settings.showMoreContext).onChange(async (value) => {
           this.plugin.settings.showMoreContext = value;
@@ -139,14 +133,17 @@ class BacklinkSettingsTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName('Sort Order')
-      .setDesc('Default sort order for backlinks')
+      .setName('Sort order')
+      .setDesc('Default sort order for backlink results.')
       .addDropdown((dropdown) =>
         dropdown
-          .addOption('alphabetical', 'Alphabetical')
-          .addOption('newest', 'Newest First')
-          .addOption('oldest', 'Oldest First')
-          .setValue(this.plugin.settings.sortOrder)
+          .addOption('file-name-a-to-z', 'File name (A to Z)')
+          .addOption('file-name-z-to-a', 'File name (Z to A)')
+          .addOption('modified-time-new-to-old', 'Modified time (new to old)')
+          .addOption('modified-time-old-to-new', 'Modified time (old to new)')
+          .addOption('created-time-new-to-old', 'Created time (new to old)')
+          .addOption('created-time-old-to-new', 'Created time (old to new)')
+          .setValue(this.plugin.settings.sortOrder || 'file-name-a-to-z')
           .onChange(async (value) => {
             this.plugin.settings.sortOrder = value;
             await this.plugin.saveSettings();
