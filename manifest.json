@@ -3,7 +3,7 @@
   "name": "Backlink Settings",
   "version": "1.0.0",
   "minAppVersion": "0.15.0",
-  "description": "Save default settings for the 'Linked mentions' view at the bottom of a document.",
+  "description": "Allow saving default settings for the backlinks / \"Linked mentions\" pane at the bottom of notes.",
   "author": "Calvin",
   "authorUrl": "https://github.com/calvinwyoung/",
   "isDesktopOnly": false
