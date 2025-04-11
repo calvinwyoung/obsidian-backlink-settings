@@ -1,12 +1,12 @@
 # Backlink Settings Plugin
 
-This is a plugin for [Obsidian](https://obsidian.md/) that allows users to store preferred
-settings for the backlinks / "Linked mentions" pane at the bottom of each file.
+This is a plugin for [Obsidian](https://obsidian.md/) that allows users to save preferred
+settings for the backlinks / "Linked mentions" pane at the bottom of notes.
 
-By default, Obsidian doesn't retain backlink settings so users need to adjust the backlink
-settings each time they open a new file.
+By default, Obsidian doesn't retain backlink settings so users need to adjust them each
+time they open a new file.
 
-This plugin allows users to set default values for the following options:
+This plugin allows users to save default values for the following options:
 
 - "Sort order": The default sort order
 - "Collapse results": Whether to collapse backlink results
