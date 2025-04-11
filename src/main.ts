@@ -86,7 +86,9 @@ export default class BacklinkSettingsPlugin extends Plugin {
       // Click the sort button to open the dropdown.
       sortButton.click();
 
+      // -----------------------
       // TODO: This doesn't work.
+      // -----------------------
       // Find and click the desired sort option.
       const sortOptions = document.querySelectorAll('.sort-option');
       sortOptions.forEach((option) => {
