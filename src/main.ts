@@ -26,7 +26,6 @@ export default class BacklinkSettingsPlugin extends Plugin {
     // Register event to apply settings when layout changes
     this.registerEvent(
       this.app.workspace.on('layout-change', () => {
-        console.log('-- layout-change');
         this.applyBacklinkSettings();
       })
     );
