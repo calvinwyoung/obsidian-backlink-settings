@@ -1,4 +1,6 @@
-import { App, Plugin, PluginSettingTab, Setting, TFile } from 'obsidian';
+import { App, MarkdownView, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import type { BacklinkComponent, BacklinkView } from 'obsidian-typings';
+import { ViewType } from 'obsidian-typings/implementations';
 
 // Remember to rename these classes and interfaces!
 
@@ -20,13 +22,13 @@ export default class BacklinkSettingsPlugin extends Plugin {
   async onload() {
     await this.loadSettings();
 
-    // This adds a settings tab so the user can configure various aspects of the plugin
+    // Add a settings tab so the user can configure the plugin.
     this.addSettingTab(new BacklinkSettingsTab(this.app, this));
 
-    // Register event to apply settings when layout changes
+    // Register event to apply settings when layout changes.
     this.registerEvent(
       this.app.workspace.on('layout-change', () => {
-        this.applyBacklinkSettings();
+        this.updateBacklinkComponents();
       })
     );
   }
@@ -41,61 +43,38 @@ export default class BacklinkSettingsPlugin extends Plugin {
     await this.saveData(this.settings);
   }
 
-  private applyBacklinkSettings() {
+  private async updateBacklinkComponents() {
     const embeddedBacklinks = document.querySelector(
       'div.embedded-backlinks'
     ) as HTMLElement;
 
-    // If the embedded backlinks element is not found, return.
+    // Short-circuit if the embedded backlinks element isn't found.
     if (!embeddedBacklinks) {
       return;
     }
 
-    // If the embedded backlinks element is not visible, return.
+    // Short-circuit if the embedded backlinks element isn't visible.
     if (!embeddedBacklinks.offsetWidth || !embeddedBacklinks.offsetHeight) {
       return;
     }
 
-    // Collapse results if the setting is enabled.
-    if (this.settings.collapseResults) {
-      const collapseButton = embeddedBacklinks.querySelector(
-        "[aria-label='Collapse results']:not(.is-active)"
-      ) as HTMLElement;
-
-      if (collapseButton) {
-        (collapseButton as HTMLElement).click();
-      }
+    // Apply settings to global backlink view.
+    const backlinkView = await getBacklinkView(this.app);
+    if (backlinkView?.backlink) {
+      applyBacklinkSettings(backlinkView.backlink, this.settings);
     }
 
-    // Show more context if the setting is enabled.
-    if (this.settings.showMoreContext) {
-      const showContextButton = embeddedBacklinks.querySelector(
-        "[aria-label='Show more context']:not(.is-active)"
-      ) as HTMLElement;
-
-      if (showContextButton) {
-        showContextButton.click();
+    // Apply settings to backlink view in each note's footer.
+    for (const leaf of this.app.workspace.getLeavesOfType(ViewType.Markdown)) {
+      if (!(leaf.view instanceof MarkdownView)) {
+        continue;
       }
-    }
 
-    // Apply sort order setting
-    const sortButton = embeddedBacklinks.querySelector(
-      "[aria-label='Change sort order']"
-    ) as HTMLElement;
-    if (sortButton) {
-      // Click the sort button to open the dropdown.
-      sortButton.click();
+      if (!leaf.view.backlinks) {
+        continue;
+      }
 
-      // -----------------------
-      // TODO: This doesn't work.
-      // -----------------------
-      // Find and click the desired sort option.
-      const sortOptions = document.querySelectorAll('.sort-option');
-      sortOptions.forEach((option) => {
-        if (option.textContent?.toLowerCase() === this.settings.sortOrder) {
-          (option as HTMLElement).click();
-        }
-      });
+      applyBacklinkSettings(leaf.view.backlinks, this.settings);
     }
   }
 }
@@ -138,17 +117,54 @@ class BacklinkSettingsTab extends PluginSettingTab {
       .setDesc('Default sort order for backlink results.')
       .addDropdown((dropdown) =>
         dropdown
-          .addOption('file-name-a-to-z', 'File name (A to Z)')
-          .addOption('file-name-z-to-a', 'File name (Z to A)')
-          .addOption('modified-time-new-to-old', 'Modified time (new to old)')
-          .addOption('modified-time-old-to-new', 'Modified time (old to new)')
-          .addOption('created-time-new-to-old', 'Created time (new to old)')
-          .addOption('created-time-old-to-new', 'Created time (old to new)')
-          .setValue(this.plugin.settings.sortOrder || 'file-name-a-to-z')
+          .addOption('alphabetical', 'File name (A to Z)')
+          .addOption('alphabeticalReverse', 'File name (Z to A)')
+          .addOption('byModifiedTime', 'Modified time (new to old)')
+          .addOption('byModifiedTimeReverse', 'Modified time (old to new)')
+          .addOption('byCreatedTime', 'Created time (new to old)')
+          .addOption('byCreatedTimeReverse', 'Created time (old to new)')
+          .setValue(this.plugin.settings.sortOrder)
           .onChange(async (value) => {
             this.plugin.settings.sortOrder = value;
             await this.plugin.saveSettings();
           })
       );
   }
+}
+
+/**
+ * Apply the given settings to a `BacklinkComponent`.
+ *
+ * Note this uses the internal API and can be brittle.
+ */
+function applyBacklinkSettings(
+  backlinkComponent: BacklinkComponent,
+  settings: BacklinkSettings
+) {
+  backlinkComponent.setCollapseAll(settings.collapseResults);
+  backlinkComponent.setExtraContext(settings.showMoreContext);
+  backlinkComponent.setSortOrder(settings.sortOrder);
+}
+
+/**
+ * Returns the global `BacklinkView` for the app.
+ *
+ * Note this uses the internal API and can be brittle.
+ *
+ * Source:
+ * https://github.com/mnaoumov/obsidian-backlink-cache/blob/2.7.4/src/BacklinkCorePlugin.ts#L70-L78
+ */
+async function getBacklinkView(app: App): Promise<BacklinkView | undefined> {
+  const backlinksLeaf = app.workspace.getLeavesOfType(ViewType.Backlink)[0];
+  if (!backlinksLeaf) {
+    return undefined;
+  }
+
+  await backlinksLeaf.loadIfDeferred();
+
+  if (backlinksLeaf.view) {
+    return backlinksLeaf.view as BacklinkView;
+  }
+
+  return undefined;
 }
