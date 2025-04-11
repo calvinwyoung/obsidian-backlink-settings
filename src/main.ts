@@ -63,6 +63,7 @@ export default class BacklinkSettingsPlugin extends Plugin {
       const collapseButton = embeddedBacklinks.querySelector(
         "[aria-label='Collapse results']:not(.is-active)"
       ) as HTMLElement;
+
       if (collapseButton) {
         (collapseButton as HTMLElement).click();
       }
@@ -89,24 +90,26 @@ export default class BacklinkSettingsPlugin extends Plugin {
     // Set reverse alphabetical sort order to test.
     backlinkView?.backlink?.setSortOrder('alphabeticalReverse');
 
-    // const sortButton = embeddedBacklinks.querySelector(
-    //   "[aria-label='Change sort order']"
-    // ) as HTMLElement;
-    // if (sortButton) {
-    //   // Click the sort button to open the dropdown.
-    //   sortButton.click();
+    /*
+    const sortButton = embeddedBacklinks.querySelector(
+      "[aria-label='Change sort order']"
+    ) as HTMLElement;
+    if (sortButton) {
+      // Click the sort button to open the dropdown.
+      sortButton.click();
 
-    //   // -----------------------
-    //   // TODO: This doesn't work.
-    //   // -----------------------
-    //   // Find and click the desired sort option.
-    //   const sortOptions = document.querySelectorAll('.sort-option');
-    //   sortOptions.forEach((option) => {
-    //     if (option.textContent?.toLowerCase() === this.settings.sortOrder) {
-    //       (option as HTMLElement).click();
-    //     }
-    //   });
-    // }
+      // -----------------------
+      // TODO: This doesn't work.
+      // -----------------------
+      // Find and click the desired sort option.
+      const sortOptions = document.querySelectorAll('.sort-option');
+      sortOptions.forEach((option) => {
+        if (option.textContent?.toLowerCase() === this.settings.sortOrder) {
+          (option as HTMLElement).click();
+        }
+      });
+    }
+    */
   }
 }
 
