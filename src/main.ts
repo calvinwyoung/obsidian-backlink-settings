@@ -1,4 +1,6 @@
-import { App, Plugin, PluginSettingTab, Setting, TFile } from 'obsidian';
+import { App, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import type { BacklinkComponent, BacklinkView } from 'obsidian-typings';
+import { ViewType } from 'obsidian-typings/implementations';
 
 // Remember to rename these classes and interfaces!
 
@@ -25,8 +27,8 @@ export default class BacklinkSettingsPlugin extends Plugin {
 
     // Register event to apply settings when layout changes
     this.registerEvent(
-      this.app.workspace.on('layout-change', () => {
-        this.applyBacklinkSettings();
+      this.app.workspace.on('layout-change', async () => {
+        await this.applyBacklinkSettings();
       })
     );
   }
@@ -41,7 +43,7 @@ export default class BacklinkSettingsPlugin extends Plugin {
     await this.saveData(this.settings);
   }
 
-  private applyBacklinkSettings() {
+  private async applyBacklinkSettings() {
     const embeddedBacklinks = document.querySelector(
       'div.embedded-backlinks'
     ) as HTMLElement;
@@ -61,7 +63,6 @@ export default class BacklinkSettingsPlugin extends Plugin {
       const collapseButton = embeddedBacklinks.querySelector(
         "[aria-label='Collapse results']:not(.is-active)"
       ) as HTMLElement;
-
       if (collapseButton) {
         (collapseButton as HTMLElement).click();
       }
@@ -79,24 +80,33 @@ export default class BacklinkSettingsPlugin extends Plugin {
     }
 
     // Apply sort order setting
-    const sortButton = embeddedBacklinks.querySelector(
-      "[aria-label='Change sort order']"
-    ) as HTMLElement;
-    if (sortButton) {
-      // Click the sort button to open the dropdown.
-      sortButton.click();
+    const backlinkView = await getBacklinkView(this.app);
 
-      // -----------------------
-      // TODO: This doesn't work.
-      // -----------------------
-      // Find and click the desired sort option.
-      const sortOptions = document.querySelectorAll('.sort-option');
-      sortOptions.forEach((option) => {
-        if (option.textContent?.toLowerCase() === this.settings.sortOrder) {
-          (option as HTMLElement).click();
-        }
-      });
-    }
+    console.log(backlinkView);
+    console.log(backlinkView?.backlink);
+    console.log(backlinkView?.backlink?.setSortOrder);
+
+    // Set reverse alphabetical sort order to test.
+    backlinkView?.backlink?.setSortOrder('alphabeticalReverse');
+
+    // const sortButton = embeddedBacklinks.querySelector(
+    //   "[aria-label='Change sort order']"
+    // ) as HTMLElement;
+    // if (sortButton) {
+    //   // Click the sort button to open the dropdown.
+    //   sortButton.click();
+
+    //   // -----------------------
+    //   // TODO: This doesn't work.
+    //   // -----------------------
+    //   // Find and click the desired sort option.
+    //   const sortOptions = document.querySelectorAll('.sort-option');
+    //   sortOptions.forEach((option) => {
+    //     if (option.textContent?.toLowerCase() === this.settings.sortOrder) {
+    //       (option as HTMLElement).click();
+    //     }
+    //   });
+    // }
   }
 }
 
@@ -138,17 +148,37 @@ class BacklinkSettingsTab extends PluginSettingTab {
       .setDesc('Default sort order for backlink results.')
       .addDropdown((dropdown) =>
         dropdown
-          .addOption('file-name-a-to-z', 'File name (A to Z)')
-          .addOption('file-name-z-to-a', 'File name (Z to A)')
-          .addOption('modified-time-new-to-old', 'Modified time (new to old)')
-          .addOption('modified-time-old-to-new', 'Modified time (old to new)')
-          .addOption('created-time-new-to-old', 'Created time (new to old)')
-          .addOption('created-time-old-to-new', 'Created time (old to new)')
-          .setValue(this.plugin.settings.sortOrder || 'file-name-a-to-z')
+          .addOption('alphabetical', 'File name (A to Z)')
+          .addOption('alphabeticalReverse', 'File name (Z to A)')
+          .addOption('byModifiedTime', 'Modified time (new to old)')
+          .addOption('byModifiedTimeReverse', 'Modified time (old to new)')
+          .addOption('byCreatedTime', 'Created time (new to old)')
+          .addOption('byCreatedTimeReverse', 'Created time (old to new)')
+          .setValue(this.plugin.settings.sortOrder || 'alphabetical')
           .onChange(async (value) => {
             this.plugin.settings.sortOrder = value;
             await this.plugin.saveSettings();
           })
       );
   }
+}
+
+/**
+ * Returns the `BacklinkView` for the app.
+ *
+ * Copied from https://github.com/mnaoumov/obsidian-backlink-cache/blob/2.7.4/src/BacklinkCorePlugin.ts#L70-L78
+ */
+async function getBacklinkView(app: App): Promise<BacklinkView | undefined> {
+  const backlinksLeaf = app.workspace.getLeavesOfType(ViewType.Backlink)[0];
+  if (!backlinksLeaf) {
+    return undefined;
+  }
+
+  await backlinksLeaf.loadIfDeferred();
+
+  if (backlinksLeaf.view) {
+    return backlinksLeaf.view as BacklinkView;
+  }
+
+  return undefined;
 }
