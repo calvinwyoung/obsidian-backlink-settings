@@ -58,12 +58,6 @@ export default class BacklinkSettingsPlugin extends Plugin {
       return;
     }
 
-    // Apply settings to global backlink view.
-    const backlinkView = await getBacklinkView(this.app);
-    if (backlinkView?.backlink) {
-      applyBacklinkSettings(backlinkView.backlink, this.settings);
-    }
-
     // Apply settings to backlink view in each note's footer.
     for (const leaf of this.app.workspace.getLeavesOfType(ViewType.Markdown)) {
       if (!(leaf.view instanceof MarkdownView)) {
@@ -75,6 +69,12 @@ export default class BacklinkSettingsPlugin extends Plugin {
       }
 
       applyBacklinkSettings(leaf.view.backlinks, this.settings);
+    }
+
+    // Apply settings to global backlink view.
+    const backlinkView = await getBacklinkView(this.app);
+    if (backlinkView?.backlink) {
+      applyBacklinkSettings(backlinkView.backlink, this.settings);
     }
   }
 }
