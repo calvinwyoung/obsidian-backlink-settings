@@ -14,9 +14,10 @@ This plugin allows users to save default values for the following options:
 
 These values get applied to the backlinks pane each time a file is opened.
 
-<!-- ## Installation
+## Installation
 
-The plugin is available in the official [Community Plugins repository](https://obsidian.md/plugins?id=backlink-settings). -->
+The plugin is available in the official [Community Plugins
+repository](https://obsidian.md/plugins?id=backlink-settings).
 
 ## Usage
 
