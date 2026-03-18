@@ -4,15 +4,14 @@
     "inlineSourceMap": true,
     "inlineSources": true,
     "module": "ESNext",
-    "target": "ES6",
+    "target": "ES2024",
     "allowJs": true,
-    "noImplicitAny": true,
-    "moduleResolution": "node",
-    "importHelpers": true,
+    "strict": true,
+    "moduleResolution": "bundler",
     "isolatedModules": true,
-    "strictNullChecks": true,
-    "types": ["node", "obsidian-typings"],
-    "lib": ["DOM", "ES5", "ES6", "ES7"]
+    "types": ["obsidian-typings"],
+    "lib": ["ES2024", "DOM"]
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "src/**/*.test.ts"]
 }

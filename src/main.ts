@@ -1,4 +1,4 @@
-import { App, MarkdownView, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { type App, MarkdownView, Plugin, PluginSettingTab, Setting } from 'obsidian';
 import type { BacklinkComponent, BacklinkView } from 'obsidian-typings';
 import { ViewType } from 'obsidian-typings/implementations';
 
@@ -17,7 +17,7 @@ const DEFAULT_SETTINGS: BacklinkSettings = {
 };
 
 export default class BacklinkSettingsPlugin extends Plugin {
-  settings: BacklinkSettings;
+  settings!: BacklinkSettings;
 
   async onload() {
     await this.loadSettings();
@@ -64,11 +64,13 @@ export default class BacklinkSettingsPlugin extends Plugin {
         continue;
       }
 
-      if (!leaf.view.backlinks) {
+      const backlinks = (leaf.view as MarkdownView & { backlinks?: BacklinkComponent })
+        .backlinks;
+      if (!backlinks) {
         continue;
       }
 
-      applyBacklinkSettings(leaf.view.backlinks, this.settings);
+      applyBacklinkSettings(backlinks, this.settings);
     }
 
     // Apply settings to global backlink view.
@@ -163,7 +165,7 @@ async function getBacklinkView(app: App): Promise<BacklinkView | undefined> {
   await backlinksLeaf.loadIfDeferred();
 
   if (backlinksLeaf.view) {
-    return backlinksLeaf.view as BacklinkView;
+    return backlinksLeaf.view as unknown as BacklinkView;
   }
 
   return undefined;
