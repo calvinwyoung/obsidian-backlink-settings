@@ -44,20 +44,6 @@ export default class BacklinkSettingsPlugin extends Plugin {
   }
 
   private async updateBacklinkComponents() {
-    const embeddedBacklinks = document.querySelector(
-      'div.embedded-backlinks'
-    ) as HTMLElement;
-
-    // Short-circuit if the embedded backlinks element isn't found.
-    if (!embeddedBacklinks) {
-      return;
-    }
-
-    // Short-circuit if the embedded backlinks element isn't visible.
-    if (!embeddedBacklinks.offsetWidth || !embeddedBacklinks.offsetHeight) {
-      return;
-    }
-
     // Apply settings to backlink view in each note's footer.
     for (const leaf of this.app.workspace.getLeavesOfType(ViewType.Markdown)) {
       if (!(leaf.view instanceof MarkdownView)) {
