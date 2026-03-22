@@ -1,7 +1,7 @@
 {
   "id": "backlink-settings",
   "name": "Backlink Settings",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "minAppVersion": "0.15.0",
   "description": "Allow saving default settings for the backlinks / \"Linked mentions\" pane at the bottom of notes.",
   "author": "Calvin",

@@ -1,6 +1,6 @@
 {
   "name": "obsidian-backlink-settings",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Obsidian plugin for configuring backlink display settings",
   "main": "main.js",
   "scripts": {
