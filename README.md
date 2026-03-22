@@ -41,9 +41,13 @@ repository](https://obsidian.md/plugins?id=backlink-settings).
 
 ### Publishing
 
-1. `pnpm version <major|minor|patch>` — bumps `version` in package.json, updates manifest.json and versions.json, and creates a git commit + tag
-2. `git push origin main --tags` — pushes the commit and tag
-3. GitHub Actions builds the plugin and creates a **draft** release with `main.js` and `manifest.json` attached
-4. Go to [GitHub Releases](https://github.com/calvinwyoung/obsidian-backlink-settings/releases) and publish the draft
+1. `make bump-version TYPE=<patch|minor|major>`: bumps version, creates a release branch,
+   and pushes it
+2. Open a PR on GitHub, review, and merge
+3. `make release-tag`: pulls main, tags the merge commit, and pushes the tag
+4. GitHub Actions builds the plugin and creates a **draft** release
+5. Go to [GitHub
+   Releases](https://github.com/calvinwyoung/obsidian-backlink-settings/releases) and
+   publish the draft
 
 > **Note:** `.npmrc` sets `tag-version-prefix=""` so tags are bare versions like `1.0.0` (no `v` prefix), which is what the GitHub Actions workflow expects.
