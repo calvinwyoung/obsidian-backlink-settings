@@ -14,12 +14,12 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@biomejs/biome": "^2.4.7",
-    "esbuild": "^0.25.0",
+    "@biomejs/biome": "^2.4.10",
+    "esbuild": "^0.28.0",
     "obsidian": "latest",
-    "obsidian-typings": "^2.42.0",
-    "typescript": "^5.9.3",
-    "vitest": "^4.1.0"
+    "obsidian-typings": "^5.18.0",
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.2"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
